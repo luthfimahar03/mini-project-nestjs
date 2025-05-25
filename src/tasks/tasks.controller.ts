@@ -6,12 +6,15 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { TaskStatus } from './enums/task-status.enum';
+import { Task } from './schemas/task.schema';
 
 @Controller('tasks')
 export class TasksController {
@@ -24,7 +27,16 @@ export class TasksController {
   }
 
   @Get()
-  getAll() {
+  async getTasks(
+    @Query('status') status?: TaskStatus,
+    @Query('search') search?: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('sort') sort: 'latest' | 'oldest' = 'latest',
+  ): Promise<Task[]> {
+    if (status) {
+      return this.tasksService.getTasks(status, search, +page, +limit, sort);
+    }
     return this.tasksService.getAllTasks();
   }
 
