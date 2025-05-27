@@ -9,12 +9,14 @@ import {
   Query,
   UsePipes,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskStatus } from './enums/task-status.enum';
 import { Task } from './schemas/task.schema';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('tasks')
 export class TasksController {
@@ -26,6 +28,7 @@ export class TasksController {
     return this.tasksService.createTask(dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getTasks(
     @Query('status') status?: TaskStatus,
